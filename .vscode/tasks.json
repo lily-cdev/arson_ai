@@ -1,0 +1,12 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build2",
+            "type": "shell",
+            "command": "${workspaceFolder}/debug.build",
+            "group": "build",
+            "problemMatcher": []
+        }
+    ]
+}
