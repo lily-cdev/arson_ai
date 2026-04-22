@@ -13,6 +13,7 @@
 #define AI_TILESIZE 16
 #define AI_WIDTH 48
 #define AI_HEIGHT 36
+#define AI_SENSORS 48
 
 typedef struct {
     int X;
@@ -54,6 +55,7 @@ typedef struct {
     bool Crushable;
     bool Triggered;
     bool Alight;
+    bool Flammable;
     int Heat;
     float Time;
     float Material;
@@ -73,6 +75,8 @@ typedef struct {
     float Firing;
     float Track1_Force;
     float Track2_Force;
-    Raycast Sensors[32];
+    Raycast Sensors[AI_SENSORS];
     float Bias;
+    float Health;
+    float Fuel;
 } Input_Group;

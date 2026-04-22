@@ -55,6 +55,8 @@ struct ai_tank {
     float Angle;
     Point_f Heat_Cone[3];
     float Firing;
+    float Health;
+    float Fuel;
     Input_Group Sensors;
 };
 

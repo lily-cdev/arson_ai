@@ -16,8 +16,10 @@ void Handle_Sensors() {
 	Tank.Sensors.Track2_Force = clamp(Tank.Tread_Force[1]);
 	Tank.Sensors.Wind = clamp((Core.Wind * 2.0f) - 1.0f);
 	Tank.Sensors.Bias = 1.0f;
-	for (int C1 = 0; C1 < 32; C1++) {
-		float Angle = ((M_PI / 16.0f) * C1) + Tank.Angle;
+	Tank.Sensors.Health = (Tank.Health - 100.0f) * 0.01f;
+	Tank.Sensors.Fuel = (Tank.Fuel - 100.0f) * 0.01f;
+	for (int C1 = 0; C1 < AI_SENSORS; C1++) {
+		float Angle = ((M_PI / (360 / AI_SENSORS)) * C1) + Tank.Angle;
 		Point_f Initial = { Tank.Pos.X * 4.0f, Tank.Pos.Y * 4.0f };
 		Tank.Sensors.Sensors[C1].Depth = -1.0f;
 		Tank.Sensors.Sensors[C1].Material = Engine.Material_Map[M_None];
@@ -52,10 +54,11 @@ void Handle_Sensors() {
 	#elif defined(_WIN32) || defined(WIN32)
 		system("cls");
 	#endif
-	printf("TMP: %.2f | WND: %.2f @ %.2f | Firing: %.2f | TRDS: %.2f & %.2f | BIAS: %.2f\n",
-		Tank.Sensors.Temperature, Tank.Sensors.Wind, Tank.Sensors.Wind_Angle, Tank.Sensors.Firing,
-		Tank.Sensors.Track1_Force, Tank.Sensors.Track2_Force, Tank.Sensors.Bias);
-	for (int C1 = 0; C1 < 32; C1++) {
+	printf("TMP: %.2f | WND: %.2f @ %.2f | Firing: %.2f | TRDS: %.2f & %.2f | BIAS: %.2f | HP: %.2f | FUEL: "
+		"%.2f\n", Tank.Sensors.Temperature, Tank.Sensors.Wind, Tank.Sensors.Wind_Angle, Tank.Sensors.Firing,
+		Tank.Sensors.Track1_Force, Tank.Sensors.Track2_Force, Tank.Sensors.Bias, Tank.Sensors.Health,
+		Tank.Sensors.Fuel);
+	for (int C1 = 0; C1 < AI_SENSORS; C1++) {
 		printf("RCST%i TMP: %.2f | ", C1, Tank.Sensors.Sensors[C1].Heat);
 		printf("RCST%i DST: %.2f | ", C1, Tank.Sensors.Sensors[C1].Depth);
 		printf("RCST%i ANG: %.2f | ", C1, Tank.Sensors.Sensors[C1].Angle);

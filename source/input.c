@@ -36,7 +36,8 @@ void Run_Flamethrower() {
 			if (Collide_Tri(Target, Tank.Heat_Cone) && !Engine.Tilemap[C1][C2].Collider) {
 				Engine.Flamemap[C1][C2] = 1.0f;
 			}
-			if (!Engine.Tilemap[C1][C2].Triggered || Engine.Tilemap[C1][C2].Alight) {
+			if (!Engine.Tilemap[C1][C2].Triggered || Engine.Tilemap[C1][C2].Alight || !Engine.Tilemap[C1][
+				C2].Flammable) {
 				continue;
 			}
 			Tick_State();

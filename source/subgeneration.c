@@ -2,9 +2,9 @@
 #include <engine.h>
 
 #define E (Tile){ }
-#define S (Tile){ .Collider = true, .Ignition_Pt = 750, .Material = M_Wood }
-#define H (Tile){ .Collider = true, .Ignition_Pt = 500, .Material = M_Straw }
-
+#define S (Tile){ .Collider = true, .Ignition_Pt = 750, .Material = M_Wood, .Flammable = true }
+#define H (Tile){ .Collider = true, .Ignition_Pt = 500, .Material = M_Straw, .Flammable = true }
+#define C (Tile){ .Collider = true, .Material = M_Clay }
 void Load_Collision(const char* Path, Point Size, Tile Yield[Size.X][Size.Y], Tile First, Tile Second) {
 	SDL_Surface* Carrier = Load_BMP(Path);
 	SDL_LockSurface(Carrier);
@@ -74,6 +74,13 @@ void Set_BarnH(Point Pos) {
 	Load_Collision("assets/barn_9x6_collision.bmp", (Point){ 36, 24 }, Yield, S, H);
 	Set((Point){ 36, 24 }, (Point){ Pos.X * 4, Pos.Y * 4 }, Yield);
 }
+
+void Set_Clayhut(Point Pos) {
+	Tile Yield[20][20] = { };
+	Load_Collision("assets/clayhut_5x5_collision.bmp", (Point){ 20, 20 }, Yield, C, E);
+	Set((Point){ 20, 20 }, (Point){ Pos.X * 4, Pos.Y * 4 }, Yield);
+};
 #undef S
 #undef E
 #undef H
+#undef C

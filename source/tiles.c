@@ -50,7 +50,7 @@ void Draw_Debug() {
 			}
 		}
 	}
-	for (int C1 = 0; C1 < 32; C1++) {
+	for (int C1 = 0; C1 < AI_SENSORS; C1++) {
 		if (Tank.Sensors.Sensors[C1].Depth > 0) {
 			float Length = Tank.Sensors.Sensors[C1].Depth * AI_WIDTH * 4.0f;
 			Point_f End = { Tank.Pos.X * 4.0f + cosf(Tank.Sensors.Sensors[C1].Angle) * Length,

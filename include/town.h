@@ -25,5 +25,6 @@ void Set_LHutV(Point Pos);
 void Set_LHutH(Point Pos);
 void Set_BarnV(Point Pos);
 void Set_BarnH(Point Pos);
+void Set_Clayhut(Point Pos);
 
 extern struct ai_town Town;

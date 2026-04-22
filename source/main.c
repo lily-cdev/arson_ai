@@ -15,7 +15,9 @@ struct ai_tank Tank = {
 	.Tread_Radius = 0.21f,
 	.Max_Speed = 23.7f,
 	.Pos = { AI_WIDTH * 0.5f, AI_HEIGHT * 0.5f },
-	.Angle = M_PI * -0.5f
+	.Angle = M_PI * -0.5f,
+	.Health = 200.0f,
+	.Fuel = 200.0f
 };
 
 //0.02c = gravel; 0.1c = dirt; 0.04c = rock; 0.08c soil; 0.3c sand
