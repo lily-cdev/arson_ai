@@ -9,7 +9,14 @@ void Run_Flamethrower() {
 	for (int C1 = 0; C1 < AI_WIDTH * 4; C1++) {
 		for (int C2 = 0; C2 < AI_HEIGHT * 4; C2++) {
 			SDL_FRect Target = { C1 * 4, C2 * 4, 4, 4 };
-			if (!Collide_Tri(Target, Tank.Heat_Cone)) {
+			if (C1 * 4.0f > Tank.Max_Cone.X) {
+				return;
+			}
+			if (C2 * 4.0f > Tank.Max_Cone.Y) {
+				break;
+			}
+			if (C1 * 4.0f < Tank.Min_Cone.X || C2 * 4.0f < Tank.Min_Cone.Y || !Collide_Tri(Target,
+				Tank.Heat_Cone)) {
 				continue;
 			}
 			Point_f Center = { Target.x + 2, Target.y + 2 };
@@ -33,15 +40,19 @@ void Run_Flamethrower() {
 			if (Skip) {
 				continue;
 			}
-			if (Collide_Tri(Target, Tank.Heat_Cone) && !Engine.Tilemap[C1][C2].Collider) {
+			if (!Engine.Tilemap[C1][C2].Collider) {
 				Engine.Flamemap[C1][C2] = 1.0f;
+			}
+			if (Engine.Tilemap[C1][C2].Alight) {
+				Engine.Tilemap[C1][C2].Time -= 0.25f / Core.Framerate;
 			}
 			if (!Engine.Tilemap[C1][C2].Triggered || Engine.Tilemap[C1][C2].Alight || !Engine.Tilemap[C1][
 				C2].Flammable) {
 				continue;
 			}
 			Tick_State();
-			Engine.Tilemap[C1][C2].Heat += min(3700, Engine.Tilemap[C1][C2].Heat + 100 - (Core.State % 50));
+			Engine.Tilemap[C1][C2].Heat += min(3700, Engine.Tilemap[C1][C2].Heat + 1700 - (Core.State %
+				550)) * (1.0f / Core.Framerate);
 			if (Engine.Tilemap[C1][C2].Heat >= Engine.Tilemap[C1][C2].Ignition_Pt) {
 				Engine.Tilemap[C1][C2].Alight = true;
 				Engine.Tilemap[C1][C2].Time = 7.0f;
@@ -72,7 +83,7 @@ void Poll_Events() {
 					Tank.Tread_Force[1] = max(Tank.Tread_Force[1] - 0.1f, -1.0f);
 				}
 				if (Event.key.key == SDLK_W) {
-					if (Tank.Firing <= 0) {
+					if (Tank.Firing < 1.0f) {
 						Tank.Firing = 1.0f;
 					}
 				}

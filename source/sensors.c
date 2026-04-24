@@ -19,7 +19,7 @@ void Handle_Sensors() {
 	Tank.Sensors.Health = (Tank.Health - 100.0f) * 0.01f;
 	Tank.Sensors.Fuel = (Tank.Fuel - 100.0f) * 0.01f;
 	for (int C1 = 0; C1 < AI_SENSORS; C1++) {
-		float Angle = ((M_PI / (360 / AI_SENSORS)) * C1) + Tank.Angle;
+		float Angle = (((M_PI * 2) / AI_SENSORS) * C1) + Tank.Angle;
 		Point_f Initial = { Tank.Pos.X * 4.0f, Tank.Pos.Y * 4.0f };
 		Tank.Sensors.Sensors[C1].Depth = -1.0f;
 		Tank.Sensors.Sensors[C1].Material = Engine.Material_Map[M_None];
@@ -37,16 +37,22 @@ void Handle_Sensors() {
 			if (Engine.Tilemap[pt(Pos)].Collider || Matched) {
 				Tank.Sensors.Sensors[C1].Depth = sqrtf(sqr(Initial.X - (Tank.Pos.X * 4.0f)) + sqr(Initial.Y -
 					(Tank.Pos.Y * 4.0f))) / (AI_WIDTH * 4.0f);
-				Tank.Sensors.Sensors[C1].Angle = Angle;
+				while (Angle < M_PI) {
+					Angle += M_PI * 2.0f;
+				}
+				while (Angle >= M_PI) {
+					Angle -= M_PI * 2.0f;
+				}
+				Tank.Sensors.Sensors[C1].Angle = Angle / M_PI;
 				if (!Matched) {
-					Tank.Sensors.Sensors[C1].Material = Engine.Tilemap[pt(Pos)].Material;
+					Tank.Sensors.Sensors[C1].Material = Engine.Material_Map[Engine.Tilemap[pt(Pos)].Material];
 					Tank.Sensors.Sensors[C1].Heat = Engine.Tilemap[pt(Pos)].Heat * 0.01f;
 				}
 				break;
 			}
 		}
 	}
-	if (SDL_GetTicks() % 100 != 0) {
+	if (!Core.Debug || SDL_GetTicks() % 100 != 0) {
 		return;
 	}
 	#ifdef __unix__

@@ -2,9 +2,16 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build2",
+            "label": "uwu",
             "type": "shell",
             "command": "${workspaceFolder}/debug.build",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": ":3",
+            "type": "shell",
+            "command": "${workspaceFolder}/yield/linker",
             "group": "build",
             "problemMatcher": []
         }

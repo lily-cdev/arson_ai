@@ -171,8 +171,8 @@ void Place_Huts() {
 		2,
 		3,
 		3,
-		5,
-		5
+		2,
+		2
 	};
 	//function pointers w/tile updating
 	void (*Placements[STRUCTS])(Point Pos) = {

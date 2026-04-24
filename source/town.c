@@ -17,6 +17,18 @@ bool Check_Building(int X, int Y) {
 	if (Town.Map[X - 3][Y - 2] == B_Hut && Town.Rotations[X - 3][Y - 2] == D_Right) {
 		return true;
 	}
+	if (Town.Map[X - 3][Y - 4] == B_Clayhut && Town.Rotations[X - 3][Y - 4] == D_Down) {
+		return true;
+	}
+	if (Town.Map[X - 1][Y] == B_Clayhut && Town.Rotations[X - 1][Y] == D_Up) {
+		return true;
+	}
+	if (Town.Map[X][Y - 3] == B_Clayhut && Town.Rotations[X][Y - 3] == D_Left) {
+		return true;
+	}
+	if (Town.Map[X - 4][Y - 1] == B_Clayhut && Town.Rotations[X - 4][Y - 1] == D_Right) {
+		return true;
+	}
 	if (Town.Map[X][Y - 1] == B_Barn && Town.Rotations[X][Y - 1] == D_Left) {
 		return true;
 	}

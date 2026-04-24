@@ -1,10 +1,11 @@
 #include <sublinker.h>
 #include <town.h>
 #include <engine.h>
+#include <ai.h>
 
 struct ai_core Core = {
 	.Running = true,
-	.Debug = true,
+	.Debug = false,
 	.Manual = true,
 	.Framerate = 60,
 	.Roll_Coefficient = 0.1
@@ -40,9 +41,9 @@ int main(int argc, char* argv[]) {
 	Tick_State();
 	Core.Temperature = Core.State % 100;
 	Tick_State();
-	Core.Epoch = (float)(Core.State % 90) + 150.0f;
+	Core.Epoch = (float)(Core.State % 50) + 90.0f;
 	Tank.Pos = (Point_f){ Engine.Center.X, Engine.Center.Y };
-	while (Core.Running) {
+	while (Core.Running && Tank.Health > 0) {
 		float Start = SDL_GetTicks();
 		Poll_Events();
         Apply_Forces();
@@ -75,8 +76,13 @@ int main(int argc, char* argv[]) {
 		Handle_Sensors();
 		SDL_RenderPresent(Core.Renderer);
 		float Time = SDL_GetTicks() - Start;
+		Core.Epoch -= 1.0f / Core.Framerate;
+		char Carrier[128];
+		snprintf(Carrier, sizeof(Carrier), "arson ai - %.2f", Core.Epoch);
+		SDL_SetWindowTitle(Core.Window, Carrier);
 		SDL_Delay(max(0, (1000 / Core.Framerate) - Time));
 	}
+	Score_Performance();
 	SDL_DestroyWindow(Core.Window);
 	SDL_DestroyRenderer(Core.Renderer);
 	Free_All();

@@ -6,6 +6,16 @@ void Collide_Tiles() {
 			if (Engine.Tilemap[C1][C2].Collider) {
 				SDL_FRect Target = { C1 * 4, C2 * 4, 4, 4 };
 				Engine.Tilemap[C1][C2].Triggered = false;
+				if (C1 * 4.0f > Tank.Max_Cone.X) {
+					return;
+				}
+				if (C2 * 4.0f > Tank.Max_Cone.Y) {
+					break;
+				}
+				if (C1 * 4.0f < Tank.Min_Cone.X || C2 * 4.0f < Tank.Min_Cone.Y || !Collide_Tri(Target,
+					Tank.Heat_Cone)) {
+					continue;
+				}
 				bool Left_Unshielded = C1 <= 0 || !Engine.Tilemap[C1 - 1][C2].Collider;
 				bool Right_Unshielded = C1 >= (AI_WIDTH * 4) - 1 || !Engine.Tilemap[C1 + 1][C2].Collider;
 				bool Up_Unshielded = C2 <= 0 || !Engine.Tilemap[C1][C2 - 1].Collider;
@@ -13,9 +23,7 @@ void Collide_Tiles() {
 				if (!Left_Unshielded && !Right_Unshielded && !Up_Unshielded && !Down_Unshielded) {
 					continue;
 				}
-				if (Collide_Tri(Target, Tank.Heat_Cone)) {
-					Engine.Tilemap[C1][C2].Triggered = true;
-				}
+				Engine.Tilemap[C1][C2].Triggered = true;
 			}
 		}
 	}
@@ -52,9 +60,10 @@ void Draw_Debug() {
 	}
 	for (int C1 = 0; C1 < AI_SENSORS; C1++) {
 		if (Tank.Sensors.Sensors[C1].Depth > 0) {
+			float Subangle = Tank.Sensors.Sensors[C1].Angle * M_PI;
 			float Length = Tank.Sensors.Sensors[C1].Depth * AI_WIDTH * 4.0f;
-			Point_f End = { Tank.Pos.X * 4.0f + cosf(Tank.Sensors.Sensors[C1].Angle) * Length,
-				Tank.Pos.Y * 4.0f + sinf(Tank.Sensors.Sensors[C1].Angle) * Length };
+			Point_f End = { Tank.Pos.X * 4.0f + cosf(Subangle) * Length, Tank.Pos.Y * 4.0f + sinf(Subangle) *
+				Length };
 			SDL_RenderLine(Core.Renderer, px(Tank.Pos.X), px(Tank.Pos.Y), End.X * 4.0f, End.Y * 4.0f);
 		}
 	}
@@ -68,6 +77,20 @@ void Draw_Tiles() {
 				if (Engine.Tilemap[C1][C2].Alight) {
 					if (Engine.Tilemap[C1][C2].Time > 0) {
 						Engine.Tilemap[C1][C2].Time -= 1.0f / Core.Framerate;
+						#define PARAM(XO, YO) if (Engine.Tilemap[C1 + XO][C2 + YO].Collider && \
+							Engine.Tilemap[C1 + XO][C2 + YO].Flammable && !Engine.Tilemap[C1 + XO][C2 + \
+							YO].Alight) { Engine.Tilemap[C1 + XO][C2 + YO].Heat = Engine.Tilemap[C1][ \
+							C2].Heat; Engine.Tilemap[C1 + XO][C2 + YO].Alight = true; Engine.Tilemap[C1 + \
+							XO][C2 + YO].Time = 7.0f; }
+						Tick_State();
+						if (Engine.Tilemap[C1][C2].Time < 3.0f && (Core.State & (int)(Core.Framerate /
+							30.0f)) == 0) {
+							PARAM(-1, 0)
+							PARAM(1, 0)
+							PARAM(0, -1)
+							PARAM(0, 1)
+						}
+						#undef PARAM
 						float Ratio = Engine.Tilemap[C1][C2].Time / 7.0f;
 						SDL_SetRenderDrawColor(Core.Renderer, 255, 127, 0, (uint8_t)(255 * (1.0f - Ratio)));
 					} else {

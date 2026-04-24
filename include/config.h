@@ -58,7 +58,7 @@ typedef struct {
     bool Flammable;
     int Heat;
     float Time;
-    float Material;
+    int Material;
 } Tile;
 
 typedef struct {

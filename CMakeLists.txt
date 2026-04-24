@@ -23,6 +23,7 @@ add_executable(arson
     source/noise.c
     source/collision.c
     source/sensors.c
+    source/scoring.c
 )
 
 target_include_directories(arson PRIVATE include)

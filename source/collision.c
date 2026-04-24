@@ -13,13 +13,19 @@ bool Collide_Subline(Point_f A, Point_f B, Point_f C, Point_f D) {
 }
 
 bool Collide_Line(SDL_FRect A, Point_f B, Point_f C) {
-	bool Checks[4] = {
-		Collide_Subline(B, C, (Point_f){ A.x, A.y }, (Point_f){ A.x + A.w, A.y }),
-		Collide_Subline(B, C, (Point_f){ A.x + A.w, A.y }, (Point_f){ A.x + A.w, A.y + A.h }),
-		Collide_Subline(B, C, (Point_f){ A.x + A.w, A.y + A.h }, (Point_f){ A.x, A.y + A.h }),
-		Collide_Subline(B, C, (Point_f){ A.x, A.y + A.h }, (Point_f){ A.x, A.y })
-	};
-	return Checks[0] || Checks[1] || Checks[2] || Checks[3];	
+	if (Collide_Subline(B, C, (Point_f){ A.x, A.y }, (Point_f){ A.x + A.w, A.y })) {
+		return true;
+	}
+	if (Collide_Subline(B, C, (Point_f){ A.x + A.w, A.y }, (Point_f){ A.x + A.w, A.y + A.h })) {
+		return true;
+	}
+	if (Collide_Subline(B, C, (Point_f){ A.x + A.w, A.y + A.h }, (Point_f){ A.x, A.y + A.h })) {
+		return true;
+	}
+	if (Collide_Subline(B, C, (Point_f){ A.x, A.y + A.h }, (Point_f){ A.x, A.y })) {
+		return true;
+	}
+	return false;	
 }
 
 bool Inside_Tri(Point_f A, Point_f B, Point_f C, Point_f D) {
