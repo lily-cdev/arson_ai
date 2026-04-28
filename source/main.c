@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
 	Engine.Material_Map[M_Wood] = 0.3f;
 	Engine.Material_Map[M_Stone] = 0.4f;
 	Engine.Material_Map[M_Flesh] = 0.5f;
+	Engine.Material_Map[M_Fire] = 0.6f;
 	Reseed_State();
 	Load_All();
 	Generate_Map();

@@ -40,7 +40,7 @@ struct ai_textures {
 
 struct ai_engine {
     Point Center;
-    float Material_Map[6];
+    float Material_Map[7];
     Tile Tilemap[AI_WIDTH * 4][AI_HEIGHT * 4];
     float Flamemap[AI_WIDTH * 4][AI_HEIGHT * 4];
 };

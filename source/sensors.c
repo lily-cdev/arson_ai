@@ -23,7 +23,6 @@ void Handle_Sensors() {
 		Point_f Initial = { Tank.Pos.X * 4.0f, Tank.Pos.Y * 4.0f };
 		Tank.Sensors.Sensors[C1].Depth = -1.0f;
 		Tank.Sensors.Sensors[C1].Material = Engine.Material_Map[M_None];
-		Tank.Sensors.Sensors[C1].Heat = -1.0f;
 		while (Initial.X >= 0 && Initial.X < AI_WIDTH * 4 && Initial.Y >= 0 && Initial.Y < AI_HEIGHT * 4) {
 			Initial.X += cosf(Angle) * 0.25f;
 			Initial.Y += sinf(Angle) * 0.25f;
@@ -43,10 +42,11 @@ void Handle_Sensors() {
 				while (Angle >= M_PI) {
 					Angle -= M_PI * 2.0f;
 				}
-				Tank.Sensors.Sensors[C1].Angle = Angle / M_PI;
 				if (!Matched) {
 					Tank.Sensors.Sensors[C1].Material = Engine.Material_Map[Engine.Tilemap[pt(Pos)].Material];
-					Tank.Sensors.Sensors[C1].Heat = Engine.Tilemap[pt(Pos)].Heat * 0.01f;
+					if (Engine.Tilemap[pt(Pos)].Material == M_Fire) {
+						Tank.Sensors.Sensors[C1].Material = Engine.Material_Map[M_Fire];
+					}
 				}
 				break;
 			}
@@ -65,9 +65,7 @@ void Handle_Sensors() {
 		Tank.Sensors.Track1_Force, Tank.Sensors.Track2_Force, Tank.Sensors.Bias, Tank.Sensors.Health,
 		Tank.Sensors.Fuel);
 	for (int C1 = 0; C1 < AI_SENSORS; C1++) {
-		printf("RCST%i TMP: %.2f | ", C1, Tank.Sensors.Sensors[C1].Heat);
 		printf("RCST%i DST: %.2f | ", C1, Tank.Sensors.Sensors[C1].Depth);
-		printf("RCST%i ANG: %.2f | ", C1, Tank.Sensors.Sensors[C1].Angle);
 		printf("RCST%i MTL: %.2f\n", C1, Tank.Sensors.Sensors[C1].Material);
 	}
 	#undef clamp

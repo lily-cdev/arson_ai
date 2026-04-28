@@ -13,7 +13,8 @@
 #define AI_TILESIZE 16
 #define AI_WIDTH 48
 #define AI_HEIGHT 36
-#define AI_SENSORS 48
+#define AI_SENSORS 32
+#define EPSILON 1e-6
 
 typedef struct {
     int X;
@@ -46,7 +47,8 @@ enum Material {
     M_Clay,
     M_Wood,
     M_Stone,
-    M_Flesh
+    M_Flesh,
+    M_Fire
 };
 
 typedef struct {
@@ -62,10 +64,8 @@ typedef struct {
 } Tile;
 
 typedef struct {
-    float Angle;
     float Depth;
     float Material;
-    float Heat;
 } Raycast;
 
 typedef struct {
