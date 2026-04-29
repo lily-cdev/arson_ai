@@ -60,7 +60,7 @@ void Draw_Debug() {
 	}
 	for (int C1 = 0; C1 < AI_SENSORS; C1++) {
 		if (Tank.Sensors.Sensors[C1].Depth > 0) {
-			float Subangle = Tank.Sensors.Sensors[C1].Angle * M_PI;
+			float Subangle = (((M_PI * 2) / AI_SENSORS) * C1) + Tank.Angle;
 			float Length = Tank.Sensors.Sensors[C1].Depth * AI_WIDTH * 4.0f;
 			Point_f End = { Tank.Pos.X * 4.0f + cosf(Subangle) * Length, Tank.Pos.Y * 4.0f + sinf(Subangle) *
 				Length };

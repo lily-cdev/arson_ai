@@ -35,6 +35,7 @@ int main(int argc, char* argv[]) {
 	Engine.Material_Map[M_Flesh] = 0.5f;
 	Engine.Material_Map[M_Fire] = 0.6f;
 	Reseed_State();
+	Read_Network(true);
 	Load_All();
 	Generate_Map();
 	Draw_Noise(T_Dirt);

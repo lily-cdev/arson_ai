@@ -16,7 +16,7 @@ void Tick_State() {
 void Reseed_State() {
     struct timespec Time;
     timespec_get(&Time, TIME_UTC);
-    Core.State = (uint32_t)(Time.tv_nsec / 1000000);
+    Core.State = (uint32_t)Time.tv_nsec;
 }
 
 void Rotate_Clockwise(Point Edge, Tile Target[Edge.X][Edge.Y], float Angle) {

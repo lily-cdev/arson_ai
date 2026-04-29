@@ -24,6 +24,7 @@ add_executable(arson
     source/collision.c
     source/sensors.c
     source/scoring.c
+    source/ai.c
 )
 
 target_include_directories(arson PRIVATE include)
