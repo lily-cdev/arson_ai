@@ -6,8 +6,8 @@
 struct ai_core Core = {
 	.Running = true,
 	.Debug = false,
-	.Manual = true,
-	.Framerate = 60,
+	.Manual = false,
+	.Framerate = 24,
 	.Roll_Coefficient = 0.1
 };
 struct ai_engine Engine = { };
@@ -24,6 +24,8 @@ struct ai_tank Tank = {
 //0.02c = gravel; 0.1c = dirt; 0.04c = rock; 0.08c soil; 0.3c sand
 
 int main(int argc, char* argv[]) {
+	Reseed_State();
+	Read_Network(argv[2][0] == 'y');
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_CreateWindowAndRenderer("arson ai", px(AI_WIDTH), px(AI_HEIGHT), 0, &Core.Window, &Core.Renderer);
 	SDL_SetRenderDrawBlendMode(Core.Renderer, SDL_BLENDMODE_BLEND);
@@ -34,8 +36,6 @@ int main(int argc, char* argv[]) {
 	Engine.Material_Map[M_Stone] = 0.4f;
 	Engine.Material_Map[M_Flesh] = 0.5f;
 	Engine.Material_Map[M_Fire] = 0.6f;
-	Reseed_State();
-	Read_Network(true);
 	Load_All();
 	Generate_Map();
 	Draw_Noise(T_Dirt);
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
 		for (int C1 = 0; C1 < AI_WIDTH * 4; C1++) {
 			for (int C2 = 0; C2 < AI_HEIGHT * 4; C2++) {
 				if (Engine.Flamemap[C1][C2] > 0) {
-					Engine.Flamemap[C1][C2] -= 2.0f / Core.Framerate;
+					Engine.Flamemap[C1][C2] = max(Engine.Flamemap[C1][C2] - (2.0f / Core.Framerate), 0);
 					Tick_State();
 					SDL_FRect Target = { C1 * 4, C2 * 4, 4, 4 };
 					SDL_SetTextureAlphaMod(Textures.Fire[Core.State & 7], (uint8_t)(Engine.Flamemap[C1][C2] *
@@ -80,11 +80,12 @@ int main(int argc, char* argv[]) {
 		float Time = SDL_GetTicks() - Start;
 		Core.Epoch -= 1.0f / Core.Framerate;
 		char Carrier[128];
-		snprintf(Carrier, sizeof(Carrier), "arson ai - %.2f", Core.Epoch);
+		snprintf(Carrier, sizeof(Carrier), "arson ai %i - %.2f - %s", atoi(argv[1]), Core.Epoch,
+			(argv[2][0] == 'y') ? "mutated" : "unmutated");
 		SDL_SetWindowTitle(Core.Window, Carrier);
 		SDL_Delay(max(0, (1000 / Core.Framerate) - Time));
 	}
-	Score_Performance();
+	Save_Network(atoi(argv[1]));
 	SDL_DestroyWindow(Core.Window);
 	SDL_DestroyRenderer(Core.Renderer);
 	Free_All();

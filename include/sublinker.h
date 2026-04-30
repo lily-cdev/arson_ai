@@ -69,6 +69,7 @@ void Reseed_State();
 void Load_All();
 void Free_All();
 void Poll_Events();
+void Feed_Forward();
 void Draw_Noise(Terrain Floor);
 void Draw_Fire();
 void Rotate_Clockwise(Point Edge, Tile Target[Edge.X][Edge.Y], float Angle);

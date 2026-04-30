@@ -62,30 +62,34 @@ void Run_Flamethrower() {
 }
 
 void Poll_Events() {
+	if (!Core.Manual) {
+		Feed_Forward();
+	}
 	SDL_Event Event;
 	while (SDL_PollEvent(&Event)) {
 		if (Event.type == SDL_EVENT_QUIT) {
 			Core.Running = false;
 		}
+		if (!Core.Manual) {
+			continue;
+		}
 		if (Event.type == SDL_EVENT_KEY_DOWN) {
 			if (Event.key.key == SDLK_K) {
 				Core.Debug = !Core.Debug;
 			}
-			if (Core.Manual) {
-				if (Event.key.key == SDLK_Q) {
-					Tank.Tread_Force[0] = min(Tank.Tread_Force[0] + 0.1f, 1.0f);
-				} else if (Event.key.key == SDLK_A) {
-					Tank.Tread_Force[0] = max(Tank.Tread_Force[0] - 0.1f, -1.0f);
-				}
-				if (Event.key.key == SDLK_E) {
-					Tank.Tread_Force[1] = min(Tank.Tread_Force[1] + 0.1f, 1.0f);
-				} else if (Event.key.key == SDLK_D) {
-					Tank.Tread_Force[1] = max(Tank.Tread_Force[1] - 0.1f, -1.0f);
-				}
-				if (Event.key.key == SDLK_W) {
-					if (Tank.Firing < 1.0f) {
-						Tank.Firing = 1.0f;
-					}
+			if (Event.key.key == SDLK_Q) {
+				Tank.Tread_Force[0] = min(Tank.Tread_Force[0] + 0.1f, 1.0f);
+			} else if (Event.key.key == SDLK_A) {
+				Tank.Tread_Force[0] = max(Tank.Tread_Force[0] - 0.1f, -1.0f);
+			}
+			if (Event.key.key == SDLK_E) {
+				Tank.Tread_Force[1] = min(Tank.Tread_Force[1] + 0.1f, 1.0f);
+			} else if (Event.key.key == SDLK_D) {
+				Tank.Tread_Force[1] = max(Tank.Tread_Force[1] - 0.1f, -1.0f);
+			}
+			if (Event.key.key == SDLK_W) {
+				if (Tank.Firing < 1.0f) {
+					Tank.Firing = 1.0f;
 				}
 			}
 		}

@@ -18,7 +18,5 @@ float Score_Performance() {
     float Efficiency = 0;
     float Preservation = (1.0f - (Tank.Health / 200.0f)) * 350.0f;
     Total = Lethality + Efficiency - Preservation;
-    printf("\n\n===SCORE===\nTOTAL: %.2f\nLethality: %.2f\nEfficiency: %.2f\nSelf-Preservation: %.2f\n",
-        Total, Lethality, Efficiency, -Preservation);
     return Total;
 }

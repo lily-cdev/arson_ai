@@ -1,43 +1,64 @@
 #!/usr/bin/env python3
-import os
+import subprocess
+import numpy
 import random
-import tkinter
+import time
+import tkinter as bitch
+import threading
 
-INPUTS = 73
-LAYER1 = 64
-LAYER2 = 32
-LAYER3 = 16
-OUTPUTS = 8
+VALUES: int = 7360;
+INIT: float = 0.1;
+PATH: str = "./nets/best.net";
+BATCHSIZE: int = 5;
+ITERATIONS: int = 10;
 
-Nodes: list[Node] = [];
-Network: Net;
-try:
-	Best = open("./nets/best.net", "rb");
-	Best.close();
-except:
-	Network = Init_Net();
-	Connect_Net(Network);
-Display: tkinter.Tk = tkinter.Tk();
-Display.title("cmd panel");
-Subdisplay: tkinter.Canvas = tkinter.Canvas(Display, width="1080", height="690");
-Offset: int = 6;
-Positions: list[int] = [0] * Network.Layers;
-Nodepos: list[Pos] = [Pos()] * (len(Network.Nodes) + 1);
-for C1 in range(len(Network.Nodes)):
-	X: int = Positions[Network.Nodes[C1].Layer] * 14 + Offset;
-	Y: int = Network.Nodes[C1].Layer * 150 + Offset;
-	Subdisplay.create_oval(X, Y, X + 6, Y + 6);
-	Positions[Network.Nodes[C1].Layer] += 1;
-	Subpos: Pos = Pos();
-	Subpos.X = X + 3;
-	Subpos.Y = Y + 3;
-	Nodepos[Network.Nodes[C1].ID] = Subpos;
-for C1 in range(len(Network.Nodes)):
-	for C2 in range(len(Network.Nodes[C1].Links)):
-		for C3 in range(len(Network.Nodes)):
-			if Network.Nodes[C1].Links[C2].Destination == Network.Nodes[C3].ID:
-				Subdisplay.create_line(Nodepos[Network.Nodes[C3].ID].X, Nodepos[Network.Nodes[C3].ID].Y,
-					Nodepos[Network.Nodes[C1].ID].X, Nodepos[Network.Nodes[C1].ID].Y, width=0.5)
-Subdisplay.pack();
-Display.mainloop();
-#os.system("seq 4 | xargs -P 4 -I {} ./yield/arson");
+def Run():
+	for C1 in range(ITERATIONS):
+		Processes: list[subprocess.Popen] = [];
+		for C2 in range(BATCHSIZE):
+			Index: int = (BATCHSIZE * C1) + C2;
+			Mutating: str = "n";
+			if (Index > 2):
+				Mutating = "y";
+			Process: subprocess.Popen = subprocess.Popen(["./yield/arson", str(Index), Mutating]);
+			Processes.append(Process);
+		for C2 in range(BATCHSIZE):
+			Processes[C2].wait();
+	Victor: numpy.ndarray = numpy.zeros(VALUES, numpy.float32);
+	Record: float = 0;
+	for C1 in range(ITERATIONS * BATCHSIZE):
+		Score: float = float(numpy.fromfile(f"./nets/score_{C1}.net", dtype=numpy.float32, count=1)[0]);
+		if (Score > Record):
+			Record = Score;
+			Victor = numpy.fromfile(f"./nets/candidate_{C1}.net", numpy.float32, count=VALUES);
+	print(f"Victor score: {Record}")
+	Victor.astype(numpy.float32).tofile(PATH);
+
+while True:
+	Network: numpy.ndarray = numpy.zeros(VALUES, numpy.float32);
+	try:
+		Network = numpy.fromfile(PATH, numpy.float32, count=VALUES);
+	except FileNotFoundError:
+		for C1 in range(VALUES):
+			Network[C1] = numpy.float32(random.uniform(-INIT, INIT));
+		Network.astype(numpy.float32).tofile(PATH);
+	Display: bitch.Tk = bitch.Tk();
+	Display.title("cmd panel");
+	Subdisplay: bitch.Canvas = bitch.Canvas(Display, width="1160", height="650");
+	for C1 in range(115):
+		for C2 in range(64):
+			X: int = (C1 * 10) + 10;
+			Y: int = (C2 * 10) + 10;
+			Radius: int = abs(float(Network[C1 * 64 + C2])) * 4;
+			Subdisplay.create_oval(X - Radius, Y - Radius, X + Radius, Y + Radius, fill="black");
+	Subdisplay.pack();
+	#argvs = id, "t" or "f" for mutating (first 2 don't mutate)
+	#write arrays
+	Thread: threading.Thread = threading.Thread(target=Run);
+	Thread.start();
+	while Thread.is_alive():
+		Display.update();
+		time.sleep(1);
+	Display.destroy();
+	#get scores, top 2 scorers frick and have children (apply to net, and loop back to start);
+	#quit(); not yet

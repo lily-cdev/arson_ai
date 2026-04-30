@@ -3,4 +3,5 @@
 #include <engine.h>
 
 float Score_Performance();
-void Read_Network(bool Mutating);
+void Read_Network(const bool Mutating);
+void Save_Network(const int ID);
