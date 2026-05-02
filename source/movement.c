@@ -20,6 +20,8 @@ void Apply_Forces() {
 	float Velocity = (Tread_Vel[0] + Tread_Vel[1]) * 0.5f;
 	Velocity -= min(sgn(Velocity) * Roll, fabsf(Velocity));
 	float Omega = (Tread_Vel[1] - Tread_Vel[0]) / (Tank.Tread_Radius * 2);
+	float Max_Omega = fabsf(Velocity) / Vel_Max * 5.0f;
+	Omega = fmaxf(-Max_Omega, fminf(Omega, Max_Omega));
 	Tank.Angle += Omega * Step;
 	Tank.Pos.X += cosf(Tank.Angle) * Velocity * Step;
 	Tank.Pos.Y += sinf(Tank.Angle) * Velocity * Step;

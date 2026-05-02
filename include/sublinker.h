@@ -18,6 +18,7 @@ struct ai_core {
     float Wind_Angle;
     float Wind_Tick;
     float Roll_Coefficient;
+    float Traction_Coefficient;
     uint32_t State;
     SDL_Texture* Noise;
     SDL_Renderer* Renderer;
@@ -59,6 +60,7 @@ struct ai_tank {
     float Firing;
     float Health;
     float Fuel;
+    float Max_Dist;
     Input_Group Sensors;
 };
 

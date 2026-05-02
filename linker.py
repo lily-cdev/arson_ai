@@ -9,8 +9,8 @@ import threading
 VALUES: int = 7360;
 INIT: float = 0.1;
 PATH: str = "./nets/best.net";
-BATCHSIZE: int = 5;
-ITERATIONS: int = 10;
+BATCHSIZE: int = 7;
+ITERATIONS: int = 8;
 
 def Run():
 	for C1 in range(ITERATIONS):
@@ -20,7 +20,13 @@ def Run():
 			Mutating: str = "n";
 			if (Index > 2):
 				Mutating = "y";
-			Process: subprocess.Popen = subprocess.Popen(["./yield/arson", str(Index), Mutating]);
+			Process: subprocess.Popen = subprocess.Popen([
+				"./yield/arson",
+				str(Index),
+				Mutating,
+				"n",
+				str(random.randint(0, 1024))
+			]);
 			Processes.append(Process);
 		for C2 in range(BATCHSIZE):
 			Processes[C2].wait();
@@ -52,13 +58,9 @@ while True:
 			Radius: int = abs(float(Network[C1 * 64 + C2])) * 4;
 			Subdisplay.create_oval(X - Radius, Y - Radius, X + Radius, Y + Radius, fill="black");
 	Subdisplay.pack();
-	#argvs = id, "t" or "f" for mutating (first 2 don't mutate)
-	#write arrays
 	Thread: threading.Thread = threading.Thread(target=Run);
 	Thread.start();
 	while Thread.is_alive():
 		Display.update();
 		time.sleep(1);
 	Display.destroy();
-	#get scores, top 2 scorers frick and have children (apply to net, and loop back to start);
-	#quit(); not yet

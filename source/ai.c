@@ -30,6 +30,9 @@ void Randomize(int X, int Y, float Matrix[X][Y]) {
 }
 
 void Save_Network(const int ID) {
+	if (Core.Manual) {
+		return;
+	}
 	char Path[64];
 	snprintf(Path, sizeof(Path), "./nets/candidate_%i.net", ID);
 	FILE* Net = fopen(Path, "wb");

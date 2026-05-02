@@ -6,9 +6,7 @@
 struct ai_core Core = {
 	.Running = true,
 	.Debug = false,
-	.Manual = false,
-	.Framerate = 24,
-	.Roll_Coefficient = 0.1
+	.Framerate = 24
 };
 struct ai_engine Engine = { };
 struct ai_tank Tank = {
@@ -21,10 +19,23 @@ struct ai_tank Tank = {
 	.Fuel = 200.0f
 };
 
-//0.02c = gravel; 0.1c = dirt; 0.04c = rock; 0.08c soil; 0.3c sand
+float Roll_Table[6] = { 0.02f, 0.1f, 0.04f, 0.08f, 0.3f, 0.2f };
+float Traction_Table[6] = { 0.5f, 0.6f, 0.7f, 0.45f, 0.2f, 0.6f };
 
 int main(int argc, char* argv[]) {
-	Reseed_State();
+	if (argc != 5) {
+		return -1;
+	}
+	Core.Manual = (argv[3][0] == 'y');
+	if (Core.Manual) {
+		Reseed_State();
+	} else {
+		Core.State = (uint32_t)atoi(argv[4]);
+	}
+	Tick_State();
+	int Terrain = Core.State % 6;
+	Core.Roll_Coefficient = Roll_Table[Terrain];
+	Core.Traction_Coefficient = Traction_Table[Terrain];
 	Read_Network(argv[2][0] == 'y');
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_CreateWindowAndRenderer("arson ai", px(AI_WIDTH), px(AI_HEIGHT), 0, &Core.Window, &Core.Renderer);
@@ -38,12 +49,12 @@ int main(int argc, char* argv[]) {
 	Engine.Material_Map[M_Fire] = 0.6f;
 	Load_All();
 	Generate_Map();
-	Draw_Noise(T_Dirt);
+	Draw_Noise(Terrain);
 	Draw_Fire();
 	Tick_State();
 	Core.Temperature = Core.State % 100;
 	Tick_State();
-	Core.Epoch = (float)(Core.State % 50) + 90.0f;
+	Core.Epoch = 60.0f;
 	Tank.Pos = (Point_f){ Engine.Center.X, Engine.Center.Y };
 	while (Core.Running && Tank.Health > 0) {
 		float Start = SDL_GetTicks();
@@ -58,6 +69,11 @@ int main(int argc, char* argv[]) {
 		Fire_Flamethrower();
 		Collide_Tiles();
 		Run_Flamethrower();
+		Tank.Max_Dist = max(Tank.Max_Dist, sqrtf(sqr(Tank.Pos.X - Engine.Center.X) + sqr(Tank.Pos.Y -
+			Engine.Center.Y)));
+		if (Tank.Pos.X <= 0 || Tank.Pos.Y <= 0 || Tank.Pos.X >= AI_WIDTH || Tank.Pos.Y >= AI_HEIGHT) {
+			Tank.Health = 0;
+		}
 		for (int C1 = 0; C1 < AI_WIDTH * 4; C1++) {
 			for (int C2 = 0; C2 < AI_HEIGHT * 4; C2++) {
 				if (Engine.Flamemap[C1][C2] > 0) {
@@ -79,9 +95,12 @@ int main(int argc, char* argv[]) {
 		SDL_RenderPresent(Core.Renderer);
 		float Time = SDL_GetTicks() - Start;
 		Core.Epoch -= 1.0f / Core.Framerate;
+		if (Core.Epoch <= 0) {
+			Core.Running = false;
+		}
 		char Carrier[128];
-		snprintf(Carrier, sizeof(Carrier), "arson ai %i - %.2f - %s", atoi(argv[1]), Core.Epoch,
-			(argv[2][0] == 'y') ? "mutated" : "unmutated");
+		snprintf(Carrier, sizeof(Carrier), "arson ai %i - %.2f - %s - s%i", atoi(argv[1]), Core.Epoch,
+			(argv[2][0] == 'y') ? "mutated" : "unmutated", atoi(argv[4]));
 		SDL_SetWindowTitle(Core.Window, Carrier);
 		SDL_Delay(max(0, (1000 / Core.Framerate) - Time));
 	}

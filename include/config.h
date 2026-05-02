@@ -34,11 +34,12 @@ typedef enum {
 } Dir;
 
 typedef enum {
+    T_Gravel,
     T_Dirt,
     T_Rock,
     T_Soil,
-    T_Gravel,
-    T_Sand
+    T_Sand,
+    T_Grass
 } Terrain;
 
 enum Material {
