@@ -23,7 +23,7 @@ float Roll_Table[6] = { 0.02f, 0.1f, 0.04f, 0.08f, 0.3f, 0.2f };
 float Traction_Table[6] = { 0.5f, 0.6f, 0.7f, 0.45f, 0.2f, 0.6f };
 
 int main(int argc, char* argv[]) {
-	if (argc != 5) {
+	if (argc != 6) {
 		return -1;
 	}
 	Core.Manual = (argv[3][0] == 'y');
@@ -32,6 +32,11 @@ int main(int argc, char* argv[]) {
 	} else {
 		Core.State = (uint32_t)atoi(argv[4]);
 	}
+	srand((unsigned int)atoi(argv[5]));
+	Tick_State();
+	Core.Wind_Delta = (Core.State % 100) * 0.0001f;
+	Tick_State();
+	Core.Speed_Delta = ((Core.State % 200) - 100) * 0.001f;
 	Tick_State();
 	int Terrain = Core.State % 6;
 	Core.Roll_Coefficient = Roll_Table[Terrain];
@@ -58,6 +63,8 @@ int main(int argc, char* argv[]) {
 	Tank.Pos = (Point_f){ Engine.Center.X, Engine.Center.Y };
 	while (Core.Running && Tank.Health > 0) {
 		float Start = SDL_GetTicks();
+		Core.Wind_Angle = fmodf((Core.Wind_Delta / Core.Framerate) + Core.Wind_Angle, M_PI);
+		Core.Wind += Core.Speed_Delta / Core.Framerate;
 		Poll_Events();
         Apply_Forces();
 		Set_Renderer(255, 255, 255);
@@ -99,8 +106,8 @@ int main(int argc, char* argv[]) {
 			Core.Running = false;
 		}
 		char Carrier[128];
-		snprintf(Carrier, sizeof(Carrier), "arson ai %i - %.2f - %s - s%i", atoi(argv[1]), Core.Epoch,
-			(argv[2][0] == 'y') ? "mutated" : "unmutated", atoi(argv[4]));
+		snprintf(Carrier, sizeof(Carrier), "arson ai %i - %.2f - %s - %i/%i", atoi(argv[1]), Core.Epoch,
+			(argv[2][0] == 'y') ? "mutated" : "unmutated", atoi(argv[4]), atoi(argv[5]));
 		SDL_SetWindowTitle(Core.Window, Carrier);
 		SDL_Delay(max(0, (1000 / Core.Framerate) - Time));
 	}

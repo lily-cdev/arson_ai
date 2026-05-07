@@ -13,8 +13,10 @@ float Output_Matrix[OUTPUTS][LAYER3];
 float Gaussian(float Sigma) {
 	float Roots[2];
 	for (int C1 = 0; C1 < 2; C1++) {
-		Tick_State();
-		Roots[C1] = (float)((Core.State + 1.0) / (UINT32_MAX + 1.0));
+		Roots[C1] = rand() / ((float)RAND_MAX);
+	}
+	if (Roots[0] < 1e-7f) {
+		Roots[0] = 1e-7f;
 	}
 	return sqrtf(-2.0f * logf(Roots[0])) * cosf(Roots[1] * M_PI * 2.0f) * Sigma;
 }
@@ -22,7 +24,6 @@ float Gaussian(float Sigma) {
 void Randomize(int X, int Y, float Matrix[X][Y]) {
 	for (int C1 = 0; C1 < X; C1++) {
 		for (int C2 = 0; C2 < Y; C2++) {
-			Tick_State();
 			Matrix[C1][C2] += Gaussian(0.05f);
 			Matrix[C1][C2] = fminf(fmaxf(Matrix[C1][C2], -1.0f), 1.0f);
 		}

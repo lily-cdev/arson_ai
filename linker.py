@@ -5,17 +5,20 @@ import random
 import time
 import tkinter as bitch
 import threading
+import os
 
 VALUES: int = 7360;
 INIT: float = 0.1;
 PATH: str = "./nets/best.net";
 BATCHSIZE: int = 7;
 ITERATIONS: int = 8;
+RNG: int = 0;
 
 def Run():
 	for C1 in range(ITERATIONS):
 		Processes: list[subprocess.Popen] = [];
 		for C2 in range(BATCHSIZE):
+			Seed: int = int.from_bytes(os.urandom(2), 'little');
 			Index: int = (BATCHSIZE * C1) + C2;
 			Mutating: str = "n";
 			if (Index > 2):
@@ -25,7 +28,8 @@ def Run():
 				str(Index),
 				Mutating,
 				"n",
-				str(random.randint(0, 1024))
+				str(RNG),
+				str(Seed)
 			]);
 			Processes.append(Process);
 		for C2 in range(BATCHSIZE):
@@ -41,6 +45,7 @@ def Run():
 	Victor.astype(numpy.float32).tofile(PATH);
 
 while True:
+	RNG = random.randint(0, 32767);
 	Network: numpy.ndarray = numpy.zeros(VALUES, numpy.float32);
 	try:
 		Network = numpy.fromfile(PATH, numpy.float32, count=VALUES);

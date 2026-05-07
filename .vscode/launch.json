@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/yield/arson",
-            "args": ["0", "n", "y", "7"],
+            "args": ["0", "n", "y", "7", "12"],
             "cwd": "${workspaceFolder}/yield",
             "externalConsole": false,
             "MIMode": "gdb",

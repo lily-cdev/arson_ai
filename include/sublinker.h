@@ -20,6 +20,8 @@ struct ai_core {
     float Roll_Coefficient;
     float Traction_Coefficient;
     uint32_t State;
+    float Wind_Delta;
+    float Speed_Delta;
     SDL_Texture* Noise;
     SDL_Renderer* Renderer;
     SDL_Window* Window;

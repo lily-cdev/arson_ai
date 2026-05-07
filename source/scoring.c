@@ -10,7 +10,7 @@ float Score_Performance() {
             }
         }
     }
-    float Efficiency = Tank.Max_Dist * 2.0f;
+    float Efficiency = 0;
     float Preservation = (1.0f - (Tank.Health / 200.0f)) * 750.0f;
     Total = Lethality + Efficiency - Preservation;
     return Total;
