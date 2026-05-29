@@ -34,9 +34,9 @@ int main(int argc, char* argv[]) {
 	}
 	srand((unsigned int)atoi(argv[5]));
 	Tick_State();
-	Core.Wind_Delta = (Core.State % 100) * 0.0001f;
+	Core.Wind_Delta = ((Core.State % 100) - 50) * 0.01f;
 	Tick_State();
-	Core.Speed_Delta = ((Core.State % 200) - 100) * 0.001f;
+	Core.Speed_Delta = (Core.State % 200) * 0.00002f;
 	Tick_State();
 	int Terrain = Core.State % 6;
 	Core.Roll_Coefficient = Roll_Table[Terrain];
@@ -61,10 +61,17 @@ int main(int argc, char* argv[]) {
 	Tick_State();
 	Core.Epoch = 60.0f;
 	Tank.Pos = (Point_f){ Engine.Center.X, Engine.Center.Y };
+	bool Benchmarks[3] = { 0 };
 	while (Core.Running && Tank.Health > 0) {
 		float Start = SDL_GetTicks();
-		Core.Wind_Angle = fmodf((Core.Wind_Delta / Core.Framerate) + Core.Wind_Angle, M_PI);
-		Core.Wind += Core.Speed_Delta / Core.Framerate;
+		for (int C1 = 0; C1 < 3; C1++) {
+			if (Core.Epoch > (C1 + 1) * 15.0f || Benchmarks[C1]) {
+				continue;
+			}
+			Benchmarks[C1] = true;
+			Core.Wind_Angle = fmodf(Core.Wind_Angle + Core.Wind_Delta, M_PI * 2);
+		}
+		Core.Wind = min(max((Core.Speed_Delta / Core.Framerate) + Core.Wind, 0.0f), 0.5f);
 		Poll_Events();
         Apply_Forces();
 		Set_Renderer(255, 255, 255);

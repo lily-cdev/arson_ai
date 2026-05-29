@@ -221,7 +221,7 @@ void Place_Huts() {
 
 void Generate_Map() {
 	Tick_State();
-	Core.Wind = (Core.State % 2000) * 0.0005f;
+	Core.Wind = (Core.State % 2000) * 0.00025f;
 	Tick_State();
 	Core.Wind_Angle = (Core.State % 360) * (M_PI / 180.0f);
 	memset(Town.Map, 0, sizeof(Town.Map));

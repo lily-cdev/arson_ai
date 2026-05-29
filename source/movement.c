@@ -56,7 +56,7 @@ void Apply_Forces() {
 				if (Collide_Tri(Target, Tri1) || Collide_Tri(Target, Tri2)) {
 					Engine.Tilemap[C1][C2].Collider = false;
 					Engine.Tilemap[C1][C2].Alight = true;
-					Tank.Health -= 1.5f;
+					Tank.Health -= 3.75f;
 				}
 			}
 		}
