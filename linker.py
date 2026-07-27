@@ -7,11 +7,11 @@ import tkinter as bitch
 import threading
 import os
 
-VALUES: int = 7360;
+VALUES: int = 85760;
 INIT: float = 0.1;
 PATH: str = "./nets/best.net";
 BATCHSIZE: int = 7;
-ITERATIONS: int = 8;
+ITERATIONS: int = 16;
 RNG: int = 0;
 
 def Run():
@@ -55,12 +55,12 @@ while True:
 		Network.astype(numpy.float32).tofile(PATH);
 	Display: bitch.Tk = bitch.Tk();
 	Display.title("cmd panel");
-	Subdisplay: bitch.Canvas = bitch.Canvas(Display, width="1160", height="650");
-	for C1 in range(115):
-		for C2 in range(64):
+	Subdisplay: bitch.Canvas = bitch.Canvas(Display, width="1590", height="1290");
+	for C1 in range(268):
+		for C2 in range(320):
 			X: int = (C1 * 10) + 10;
 			Y: int = (C2 * 10) + 10;
-			Radius: int = abs(float(Network[C1 * 64 + C2])) * 4;
+			Radius: int = abs(float(Network[(C1 * 128) + C2])) * 4;
 			Subdisplay.create_oval(X - Radius, Y - Radius, X + Radius, Y + Radius, fill="black");
 	Subdisplay.pack();
 	Thread: threading.Thread = threading.Thread(target=Run);

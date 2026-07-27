@@ -1,14 +1,21 @@
 #include <ai.h>
 #define INPUTS 73
-#define LAYER1 64
-#define LAYER2 32
-#define LAYER3 16
+#define LAYER1 128
+#define LAYER2 256
+#define LAYER3 128
+#define LAYER4 64
+#define LAYER5 32
+#define LAYER6 16
 #define OUTPUTS 8
+#define TOTAL 85760
 
 float Hidden1_Matrix[LAYER1][INPUTS];
 float Hidden2_Matrix[LAYER2][LAYER1];
 float Hidden3_Matrix[LAYER3][LAYER2];
-float Output_Matrix[OUTPUTS][LAYER3];
+float Hidden4_Matrix[LAYER4][LAYER3];
+float Hidden5_Matrix[LAYER5][LAYER4];
+float Hidden6_Matrix[LAYER6][LAYER5];
+float Output_Matrix[OUTPUTS][LAYER6];
 
 float Gaussian(float Sigma) {
 	float Roots[2];
@@ -46,11 +53,19 @@ void Save_Network(const int ID) {
 	for (int C1 = 0; C1 < LAYER3; C1++) {
 		fwrite(Hidden3_Matrix[C1], sizeof(float), LAYER2, Net);
 	}
+	for (int C1 = 0; C1 < LAYER4; C1++) {
+		fwrite(Hidden4_Matrix[C1], sizeof(float), LAYER3, Net);
+	}
+	for (int C1 = 0; C1 < LAYER5; C1++) {
+		fwrite(Hidden5_Matrix[C1], sizeof(float), LAYER4, Net);
+	}
+	for (int C1 = 0; C1 < LAYER6; C1++) {
+		fwrite(Hidden6_Matrix[C1], sizeof(float), LAYER5, Net);
+	}
 	for (int C1 = 0; C1 < OUTPUTS; C1++) {
-		fwrite(Output_Matrix[C1], sizeof(float), LAYER3, Net);
+		fwrite(Output_Matrix[C1], sizeof(float), LAYER6, Net);
 	}
 	fclose(Net);	
-	
 	snprintf(Path, sizeof(Path), "./nets/score_%i.net", ID);
 	FILE* Score = fopen(Path, "wb");
 	fwrite(&(float){ Score_Performance() }, sizeof(float), 1, Score);
@@ -75,8 +90,17 @@ void Read_Network(const bool Mutating) {
 	for (int C1 = 0; C1 < LAYER3; C1++) {
 		fread(Hidden3_Matrix[C1], sizeof(float), LAYER2, Net);
 	}
+	for (int C1 = 0; C1 < LAYER4; C1++) {
+		fread(Hidden4_Matrix[C1], sizeof(float), LAYER3, Net);
+	}
+	for (int C1 = 0; C1 < LAYER5; C1++) {
+		fread(Hidden5_Matrix[C1], sizeof(float), LAYER4, Net);
+	}
+	for (int C1 = 0; C1 < LAYER6; C1++) {
+		fread(Hidden6_Matrix[C1], sizeof(float), LAYER5, Net);
+	}
 	for (int C1 = 0; C1 < OUTPUTS; C1++) {
-		fread(Output_Matrix[C1], sizeof(float), LAYER3, Net);
+		fread(Output_Matrix[C1], sizeof(float), LAYER6, Net);
 	}
 	fclose(Net);
 	if (!Mutating) {
@@ -85,7 +109,10 @@ void Read_Network(const bool Mutating) {
 	Randomize(LAYER1, INPUTS, Hidden1_Matrix);
 	Randomize(LAYER2, LAYER1, Hidden2_Matrix);
 	Randomize(LAYER3, LAYER2, Hidden3_Matrix);
-	Randomize(OUTPUTS, LAYER3, Output_Matrix);
+	Randomize(LAYER4, LAYER3, Hidden4_Matrix);
+	Randomize(LAYER5, LAYER4, Hidden5_Matrix);
+	Randomize(LAYER6, LAYER5, Hidden6_Matrix);
+	Randomize(OUTPUTS, LAYER6, Output_Matrix);
 }
 
 void Step(int X, int Y, float Applied[X], float Initial[Y], float Matrix[X][Y]) {
@@ -103,6 +130,9 @@ void Forward_Pass(float Yield[OUTPUTS]) {
 	float A1[LAYER1] = { };
 	float A2[LAYER2] = { };
 	float A3[LAYER3] = { };
+	float A4[LAYER4] = { };
+	float A5[LAYER5] = { };
+	float A6[LAYER6] = { };
 	A0[0] = Tank.Sensors.Bias;
 	A0[1] = Tank.Sensors.Firing;
 	A0[2] = Tank.Sensors.Track1_Force;
@@ -113,13 +143,16 @@ void Forward_Pass(float Yield[OUTPUTS]) {
 	A0[7] = Tank.Sensors.Fuel;
 	A0[8] = Tank.Sensors.Temperature;
 	for (int C1 = 0; C1 < 32; C1++) {
-		A0[(C1 * 2) + 8] = Tank.Sensors.Sensors[C1].Depth;
-		A0[(C1 * 2) + 9] = Tank.Sensors.Sensors[C1].Material;
+		A0[(C1 * 2) + 9] = Tank.Sensors.Sensors[C1].Depth;
+		A0[(C1 * 2) + 10] = Tank.Sensors.Sensors[C1].Material;
 	}
 	Step(LAYER1, INPUTS, A1, A0, Hidden1_Matrix);
 	Step(LAYER2, LAYER1, A2, A1, Hidden2_Matrix);
 	Step(LAYER3, LAYER2, A3, A2, Hidden3_Matrix);
-	Step(OUTPUTS, LAYER3, Yield, A3, Output_Matrix);
+	Step(LAYER4, LAYER3, A4, A3, Hidden4_Matrix);
+	Step(LAYER5, LAYER4, A5, A4, Hidden5_Matrix);
+	Step(LAYER6, LAYER5, A6, A5, Hidden6_Matrix);
+	Step(OUTPUTS, LAYER6, Yield, A6, Output_Matrix);
 }
 
 void Feed_Forward() {
@@ -134,7 +167,7 @@ void Feed_Forward() {
 	if (Output[3] > 0.0f) {
 		char Speech[5];
 		for (int C1 = 0; C1 < 4; C1++) {
-			Speech[C1] = (char)min(max(floor((Output[C1 + 4] + 1.0f) * 64.0f), 127), 0);
+			Speech[C1] = (char)max(min(floor((Output[C1 + 4] + 1.0f) * 64.0f), 127), 0);
 		}
 		Speech[4] = '\0';
 		puts(Speech);
